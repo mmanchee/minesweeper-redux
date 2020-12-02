@@ -1,5 +1,6 @@
 import React from 'react';
 import Board from './Board';
+import ReactTooltip from 'react-tooltip';
 
 class Game extends React.Component {
   /*
@@ -8,9 +9,9 @@ class Game extends React.Component {
     Expert: 40 mines, 16x16 board
     */
   state = {
-    height: 8,
-    width: 8,
-    mines: 10
+    height: 0,
+    width: 0,
+    mines: 0
   };
 
   handleGameStart = () => {
@@ -21,21 +22,20 @@ class Game extends React.Component {
         width: 8,
         mines: 10,
       });
-    }
-    if (difficulty.value === "intermediate") {
+    } else if (difficulty.value === "intermediate") {
       this.setState({
         height: 12,
         width: 12,
         mines: 20,
       });
-    }
-    if (difficulty.value === "expert") {
+    } else  { //(difficulty.value === "expert")
       this.setState({
         height: 16,
         width: 16,
         mines: 40,
       });
     }
+    console.log('state in handleGameStart',this.state)
   }
 
   render() {
@@ -44,10 +44,12 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-info">
           <div className="instructions">
-            <h4>Rules</h4>
-            <p>You are presented with a board of squares. Some squares contain mines (bombs), others don't. If you click on a square containing a bomb, you lose. If you manage to click all the squares (without clicking on any bombs) or flag all the mines, you win.</p>
-            <p>Clicking a square which doesn't have a bomb reveals the number of neighbouring squares containing bombs. Use this information plus some guess work to avoid the bombs.</p>
-            <p>To open a square, point at the square and click on it. To mark a square you think is a bomb, point and right-click.</p>
+            <h4 data-tip data-for="tooltip">Rules</h4>
+            <ReactTooltip id="tooltip" place="top" effect="solid">
+              You are presented with a board of squares. Some squares contain mines (bombs), others don't. If you click on a square containing a bomb, you lose. If you manage to click all the squares (without clicking on any bombs) or flag all the mines, you win.
+              Clicking a square which doesn't have a bomb reveals the number of neighboring squares containing bombs. Use this information plus some guess work to avoid the bombs.
+              To open a square, point at the square and click on it. To mark a square you think is a bomb, point and right-click.
+            </ReactTooltip>
           </div>
           <h4>Select a level a click "start"</h4>
           <span className="info">Level:

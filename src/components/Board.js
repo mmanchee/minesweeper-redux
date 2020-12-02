@@ -1,5 +1,5 @@
 import React from 'react';
-import Cell from './cell';
+import Cell from './Cell';
 
 class Board extends React.Component {
   state = {
@@ -79,7 +79,7 @@ class Board extends React.Component {
     }
     data = this.plantMines(data, height, width, mines);
     data = this.getNeighbours(data, height, width);
-    console.log(data);
+    //console.log(data);
     return data;
   }
 
@@ -88,8 +88,8 @@ class Board extends React.Component {
     let randomx, randomy, minesPlanted = 0;
 
     while (minesPlanted < mines) {
-      randomx = this.getRandomNumber(width);
-      randomy = this.getRandomNumber(height);
+      randomy = this.getRandomNumber(width);
+      randomx = this.getRandomNumber(height);
       if (!(data[randomx][randomy].isMine)) {
         data[randomx][randomy].isMine = true;
         minesPlanted++;
@@ -106,7 +106,7 @@ class Board extends React.Component {
       for (let j = 0; j < width; j++) {
         if (data[i][j].isMine !== true) {
           let mine = 0;
-          const area = this.traverseBoard(data[i][j].x, data[i][j].y, data);
+          const area = this.traverseBoard(data[i][j].x, data[i][j].y, data, height,width);
           area.map(value => {
             if (value.isMine) {
               mine++;
@@ -119,52 +119,45 @@ class Board extends React.Component {
         }
       }
     }
-
     return (updatedData);
   };
 
   // looks for neighbouring cells and returns them
-  traverseBoard(x, y, data) {
+  traverseBoard(x, y, data,height,width) {
     const el = [];
-
-    //up
-    if (x > 0) {
-      el.push(data[x - 1][y]);
-    }
-
-    //down
-    if (x < this.props.height - 1) {
-      el.push(data[x + 1][y]);
-    }
-
-    //left
-    if (y > 0) {
-      el.push(data[x][y - 1]);
-    }
-
-    //right
-    if (y < this.props.width - 1) {
-      el.push(data[x][y + 1]);
-    }
-
+    //console.log('trav props',this.props)
+    
     // top left
     if (x > 0 && y > 0) {
       el.push(data[x - 1][y - 1]);
     }
-
+    // up
+    if (x > 0) {
+      el.push(data[x - 1][y]);
+    }
     // top right
-    if (x > 0 && y < this.props.width - 1) {
+    if (x > 0 && y <width - 1) {  
       el.push(data[x - 1][y + 1]);
     }
-
+    // right
+    if (y < width - 1) {
+      el.push(data[x][y + 1]);
+    }
     // bottom right
-    if (x < this.props.height - 1 && y < this.props.width - 1) {
+    if (x < height - 1 && y < width - 1) {
       el.push(data[x + 1][y + 1]);
     }
-
+    // down
+    if (x < height - 1) {
+      el.push(data[x + 1][y]);
+    }
     // bottom left
-    if (x < this.props.height - 1 && y > 0) {
+    if (x < height - 1 && y > 0) {
       el.push(data[x + 1][y - 1]);
+    }
+    // left
+    if (y > 0) {
+      el.push(data[x][y - 1]);
     }
     return el;
   }
@@ -184,7 +177,8 @@ class Board extends React.Component {
 
   /* reveal logic for empty cell */
   revealEmpty(x, y, data) {
-    let area = this.traverseBoard(x, y, data);
+    //console.log('reveal empty', this.props);
+    let area = this.traverseBoard(x, y, data, this.props.height, this.props.width);
     area.map(value => {
       if (!value.isRevealed && (value.isEmpty || !value.isMine)) {
         data[value.x][value.y].isRevealed = true;
