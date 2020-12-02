@@ -1,12 +1,18 @@
 import React from 'react';
 import Cell from './Cell';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 class Board extends React.Component {
-  state = {
-    boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
-    gameWon: false,
-    mineCount: this.props.mines,
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+      gameWon: false,
+      mineCount: this.props.mines,
+    };
+  }
+  
 
   /* Helper Functions */
   // get mines
@@ -287,6 +293,7 @@ class Board extends React.Component {
   }
 
   render() {
+    console.log("props ", this.props);
     return (
       <div className="board">
         <div className="game-info">
@@ -300,5 +307,21 @@ class Board extends React.Component {
     );
   }
 }
+
+Board.propTypes = {
+  boardData: PropTypes.array,
+  gameWon: PropTypes.bool,
+  mineCount: PropTypes.number
+};
+
+const mapStateToProps = state => {
+  return {
+    boardData: state.boardData,
+    gameWon: state.gameWon,
+    mineCount: state.mineCount
+  }
+}
+
+Board = connect(mapStateToProps)(Board);
 
 export default Board;
