@@ -28,13 +28,16 @@ class Board extends React.Component {
   // get mines
   getMines(data) {
     let mineArray = [];
-
+    console.log("data ", data);
     data.map(dataRow => {
+      
       dataRow.map((dataItem) => {
         if (dataItem.isMine) {
           mineArray.push(dataItem);
         }
+        
       });
+      console.log("row ", dataRow);
     });
     return mineArray;
   }
@@ -186,9 +189,20 @@ class Board extends React.Component {
         dataItem.isRevealed = true;
       });
     });
+
+    const {dispatch} = this.props; 
+    const action = {
+      type: 'UPDATE_BOARD',
+      boardData: updatedData,   
+    }
+    console.log(action)
+    dispatch(action);
+
+////
     this.setState({
       boardData: updatedData
     })
+    //////
   }
 
   /* reveal logic for empty cell */
@@ -209,9 +223,11 @@ class Board extends React.Component {
   // Handle User Events
   handleCellClick(x, y) {
     let win = false;
-
+    console.log("this ", this.props.boardData[x][y]);
     // check if revealed. return if true.
-    if (this.props.boardData[x][y].isRevealed) return null;
+    if (this.props.boardData[x][y].isRevealed) {
+      return null;
+    }
 
     // check if mine. game over if true
     if (this.props.boardData[x][y].isMine) {
@@ -226,28 +242,31 @@ class Board extends React.Component {
     if (updatedData[x][y].isEmpty) {
       updatedData = this.revealEmpty(x, y, updatedData);
     }
-
+ 
     if (this.getHidden(updatedData).length === this.props.mines) {
       win = true;
       this.revealBoard();
       alert("You Win");
-    }
-    const {dispatch} = this.props;
+    } 
+    const {dispatch} = this.props; 
     const action = {
       type: 'CELL_CLICK',
-      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+      boardData: updatedData,   
       gameWon: false,
-      mineCount: this.props.mines,
+      mineCount: this.props.mineCount - this.getFlags(updatedData).length,
     }
+    console.log(action)
     dispatch(action);
-    // this.setState({
-    //   boardData: updatedData,
-    //   mineCount: this.props.mines - this.getFlags(updatedData).length,
-    //   gameWon: win,
-    // });
+    //////
+    this.setState({
+      boardData: updatedData,
+      mineCount: this.props.mines - this.getFlags(updatedData).length,
+      gameWon: win,
+    });
+    ////////
   }
 
-  _handleContextMenu(e, x, y) {
+  handleContextMenu(e, x, y) {
     e.preventDefault();
     let updatedData = this.props.boardData;
     let mines = this.props.mineCount;
@@ -276,18 +295,19 @@ class Board extends React.Component {
     const {dispatch} = this.props;
     const action = {
       type: 'CELL_CLICK',
-      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+      boardData: updatedData,
       gameWon: false,
       mineCount: mines,
     }
     console.log(action)
     dispatch(action);
-
-    // this.setState({
-    //   boardData: updatedData,
-    //   mineCount: mines,
-    //   gameWon: win,
-    // });
+//////////
+    this.setState({
+      boardData: updatedData,
+      mineCount: mines,
+      gameWon: win,
+    });
+    /////////
   }
 
   renderBoard(data) {
@@ -297,7 +317,7 @@ class Board extends React.Component {
           <div key={dataItem.x * dataRow.length + dataItem.y}>
             <Cell
               onClick={() => this.handleCellClick(dataItem.x, dataItem.y)}
-              cMenu={(e) => this._handleContextMenu(e, dataItem.x, dataItem.y)}
+              cMenu={(e) => this.handleContextMenu(e, dataItem.x, dataItem.y)}
               value={dataItem}
               />
             {(dataRow[dataRow.length - 1] === dataItem) ? <div className="clear" /> : ""}
@@ -335,14 +355,14 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
-  //boardData: PropTypes.array,
+  boardData: PropTypes.array,
   gameWon: PropTypes.bool,
   mineCount: PropTypes.number
 };
 
 const mapStateToProps = state => {
   return {
-    //boardData: state.boardData,
+    boardData: state.boardData,
     gameWon: state.gameWon,
     mineCount: state.mineCount
   }

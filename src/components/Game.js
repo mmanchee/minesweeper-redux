@@ -25,16 +25,13 @@ class Game extends React.Component {
       type: 'CREATE_BOARD',
       width: parseInt(document.getElementById('width').value),
       height: parseInt(document.getElementById('height').value),
-      mines: parseInt(document.getElementById('mines').value)
-    }
-    dispatch(action);
-    const action2  = {
-      type: 'INIT_BOARD',
+      mines: parseInt(document.getElementById('mines').value),
       boardData: Board.WrappedComponent.prototype.initBoardData(parseInt(document.getElementById('height').value),parseInt(document.getElementById('width').value),parseInt(document.getElementById('mines').value))
     }
-    dispatch(action2);
-    console.log(action2)
-    
+    dispatch(action);
+    console.log(action)
+    console.log(this.props)
+     
 
 
 
@@ -92,7 +89,7 @@ Game.propTypes={
   width: PropTypes.number,
   height: PropTypes.number,
   mines: PropTypes.number,
-  boardData: PropTypes.array,
+  
   
 }
 
@@ -101,7 +98,7 @@ const mapStateToProps = state => {
     width: state.width,
     height: state.height,
     mines: state.mines,
-    boardData: state.boardData,
+    
   }
 }
 

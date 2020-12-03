@@ -1,6 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 class Cell extends React.Component {
+  
   getValue() {
   if (!this.props.value.isRevealed){
     return this.props.value.isFlagged ? "🚩" : null;
@@ -15,6 +18,8 @@ class Cell extends React.Component {
 }
 
 render(){
+  console.log(this.props)
+  console.log(this.state)
   let className = "cell" + (this.props.value.isRevealed ? "" : " hidden") + (this.props.value.isMine ? " is-mine" : "") + (this.props.value.isFlagged ? " is-flag" : "");
 
   return (
@@ -22,7 +27,30 @@ render(){
       {this.getValue()}
     </div>
   );
-}
+}           
 }
 
-export default Cell;
+// const cellItemShape = { 
+//   isRevealed: PropTypes.bool,
+//   isMine: PropTypes.bool,
+//   isFlagged: PropTypes.bool
+// }
+// Cell.propTypes = {
+//   value: PropTypes.objectOf(PropTypes.shape(cellItemShape)),
+//   onClick: PropTypes.func,
+//   cMenu: PropTypes.func
+// }
+
+// Cell.propTypes = {
+//   value: PropTypes.object,
+  
+// };
+
+// const mapStateToProps = state => {
+//   return {
+//     value: state.value,
+    
+//   }
+// }
+// Cell = connect(mapStateToProps)(Cell)
+export default Cell; 
