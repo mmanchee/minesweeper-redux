@@ -16,8 +16,11 @@ class Game extends React.Component {
   //   mines: 0
   // };
 
+  
+
   handleGameStart = () => {
     const {dispatch} = this.props;
+    console.log(Board)
     const action = {
       type: 'CREATE_BOARD',
       width: parseInt(document.getElementById('width').value),
@@ -25,6 +28,13 @@ class Game extends React.Component {
       mines: parseInt(document.getElementById('mines').value)
     }
     dispatch(action);
+    const action2  = {
+      type: 'INIT_BOARD',
+      boardData: Board.WrappedComponent.prototype.initBoardData(parseInt(document.getElementById('height').value),parseInt(document.getElementById('width').value),parseInt(document.getElementById('mines').value))
+    }
+    dispatch(action2);
+    console.log(action2)
+    
 
 
 
@@ -69,15 +79,10 @@ class Game extends React.Component {
           <input type="number" id="height" min="4" max="45" placeholder="Enter Height"/>
           <input type="number" id="width" min="4" max="45" placeholder="Enter Width"/>
           <input type="number" id="mines" min="1" placeholder="Enter Mine Qty"/>
-            {/* <select id="level_select">
-              <option value="beginner"> Beginner </option>
-              <option value="intermediate"> Intermediate </option>
-              <option value="expert"> Expert </option>
-            </select> */}
           </span>
           <button onClick={this.handleGameStart}>Start</button>
         </div>
-        <Board height={this.props.height} width={this.props.width} mines={this.props.mines} />
+         <Board />{/*//height={this.props.height} width={this.props.width} mines={this.props.mines} /> */}
       </div>
     );
   }
@@ -87,6 +92,7 @@ Game.propTypes={
   width: PropTypes.number,
   height: PropTypes.number,
   mines: PropTypes.number,
+  boardData: PropTypes.array,
   
 }
 
@@ -95,6 +101,7 @@ const mapStateToProps = state => {
     width: state.width,
     height: state.height,
     mines: state.mines,
+    boardData: state.boardData,
   }
 }
 

@@ -5,12 +5,22 @@ import { connect } from 'react-redux';
 
 class Board extends React.Component {
   constructor(props){
+    console.log('in constructor') 
     super(props);
-    this.state = {
-      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
-      gameWon: false,
-      mineCount: this.props.mines,
-    };
+    // const {dispatch} = this.props;
+    // const action = {
+    //   type: 'INITIALIZE_BOARD',
+    //   boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+    //   gameWon: false,
+    //   mineCount: this.props.mines,
+    // }
+    // dispatch(action);
+    // console.log(action) 
+    // this.state = {
+    //   boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+    //   gameWon: false,
+    //   mineCount: this.props.mines,
+    // };
   }
   
 
@@ -19,10 +29,10 @@ class Board extends React.Component {
   getMines(data) {
     let mineArray = [];
 
-    data.map(datarow => {
-      datarow.map((dataitem) => {
-        if (dataitem.isMine) {
-          mineArray.push(dataitem);
+    data.map(dataRow => {
+      dataRow.map((dataItem) => {
+        if (dataItem.isMine) {
+          mineArray.push(dataItem);
         }
       });
     });
@@ -33,10 +43,10 @@ class Board extends React.Component {
   getFlags(data) {
     let mineArray = [];
 
-    data.map(datarow => {
-      datarow.map((dataitem) => {
-        if (dataitem.isFlagged) {
-          mineArray.push(dataitem);
+    data.map(dataRow => {
+      dataRow.map((dataItem) => {
+        if (dataItem.isFlagged) {
+          mineArray.push(dataItem);
         }
       });
     });
@@ -48,10 +58,10 @@ class Board extends React.Component {
   getHidden(data) {
     let mineArray = [];
 
-    data.map(datarow => {
-      datarow.map((dataitem) => {
-        if (!dataitem.isRevealed) {
-          mineArray.push(dataitem);
+    data.map(dataRow => {
+      dataRow.map((dataItem) => {
+        if (!dataItem.isRevealed) {
+          mineArray.push(dataItem);
         }
       });
     });
@@ -59,7 +69,7 @@ class Board extends React.Component {
     return mineArray;
   }
 
-  // get random number given a dimension
+  // // get random number given a dimension
   getRandomNumber(dimension) {
     // return Math.floor(Math.random() * dimension);
     return Math.floor((Math.random() * 1000) + 1) % dimension;
@@ -76,7 +86,7 @@ class Board extends React.Component {
           x: i,
           y: j,
           isMine: false,
-          neighbour: 0,
+          neighbor: 0,
           isRevealed: false,
           isEmpty: false,
           isFlagged: false,
@@ -84,28 +94,28 @@ class Board extends React.Component {
       }
     }
     data = this.plantMines(data, height, width, mines);
-    data = this.getNeighbours(data, height, width);
+    data = this.getNeighbors(data, height, width);
     //console.log(data);
     return data;
   }
 
   // plant mines on the board
   plantMines(data, height, width, mines) {
-    let randomx, randomy, minesPlanted = 0;
+    let randomX, randomY, minesPlanted = 0;
 
     while (minesPlanted < mines) {
-      randomy = this.getRandomNumber(width);
-      randomx = this.getRandomNumber(height);
-      if (!(data[randomx][randomy].isMine)) {
-        data[randomx][randomy].isMine = true;
+      randomY = this.getRandomNumber(width);
+      randomX = this.getRandomNumber(height);
+      if (!(data[randomX][randomY].isMine)) {
+        data[randomX][randomY].isMine = true;
         minesPlanted++;
       }
     }
     return (data);
   }
 
-  // get number of neighbouring mines for each board cell
-  getNeighbours(data, height, width) {
+  // get number of neighboring mines for each board cell
+  getNeighbors(data, height, width) {
     let updatedData = data, index = 0;
 
     for (let i = 0; i < height; i++) {
@@ -121,17 +131,17 @@ class Board extends React.Component {
           if (mine === 0) {
             updatedData[i][j].isEmpty = true;
           }
-          updatedData[i][j].neighbour = mine;
+          updatedData[i][j].neighbor = mine;
         }
       }
     }
     return (updatedData);
   };
 
-  // looks for neighbouring cells and returns them
+  // looks for neighboring cells and returns them
   traverseBoard(x, y, data,height,width) {
     const el = [];
-    //console.log('trav props',this.props)
+    //console.log('travis props',this.props)
     
     // top left
     if (x > 0 && y > 0) {
@@ -170,10 +180,10 @@ class Board extends React.Component {
 
   // reveals the whole board
   revealBoard() {
-    let updatedData = this.state.boardData;
-    updatedData.map((datarow) => {
-      datarow.map((dataitem) => {
-        dataitem.isRevealed = true;
+    let updatedData = this.props.boardData;
+    updatedData.map((dataRow) => {
+      dataRow.map((dataItem) => {
+        dataItem.isRevealed = true;
       });
     });
     this.setState({
@@ -201,15 +211,15 @@ class Board extends React.Component {
     let win = false;
 
     // check if revealed. return if true.
-    if (this.state.boardData[x][y].isRevealed) return null;
+    if (this.props.boardData[x][y].isRevealed) return null;
 
     // check if mine. game over if true
-    if (this.state.boardData[x][y].isMine) {
+    if (this.props.boardData[x][y].isMine) {
       this.revealBoard();
       alert("game over");
     }
 
-    let updatedData = this.state.boardData;
+    let updatedData = this.props.boardData;
     updatedData[x][y].isFlagged = false;
     updatedData[x][y].isRevealed = true;
 
@@ -222,18 +232,25 @@ class Board extends React.Component {
       this.revealBoard();
       alert("You Win");
     }
-
-    this.setState({
-      boardData: updatedData,
-      mineCount: this.props.mines - this.getFlags(updatedData).length,
-      gameWon: win,
-    });
+    const {dispatch} = this.props;
+    const action = {
+      type: 'CELL_CLICK',
+      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+      gameWon: false,
+      mineCount: this.props.mines,
+    }
+    dispatch(action);
+    // this.setState({
+    //   boardData: updatedData,
+    //   mineCount: this.props.mines - this.getFlags(updatedData).length,
+    //   gameWon: win,
+    // });
   }
 
   _handleContextMenu(e, x, y) {
     e.preventDefault();
-    let updatedData = this.state.boardData;
-    let mines = this.state.mineCount;
+    let updatedData = this.props.boardData;
+    let mines = this.props.mineCount;
     let win = false;
 
     // check if already revealed
@@ -256,25 +273,34 @@ class Board extends React.Component {
         alert("You Win");
       }
     }
-
-    this.setState({
-      boardData: updatedData,
+    const {dispatch} = this.props;
+    const action = {
+      type: 'CELL_CLICK',
+      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+      gameWon: false,
       mineCount: mines,
-      gameWon: win,
-    });
+    }
+    console.log(action)
+    dispatch(action);
+
+    // this.setState({
+    //   boardData: updatedData,
+    //   mineCount: mines,
+    //   gameWon: win,
+    // });
   }
 
   renderBoard(data) {
-    return data.map((datarow) => {
-      return datarow.map((dataitem) => {
+    return data.map((dataRow) => {
+      return dataRow.map((dataItem) => {
         return (
-          <div key={dataitem.x * datarow.length + dataitem.y}>
+          <div key={dataItem.x * dataRow.length + dataItem.y}>
             <Cell
-              onClick={() => this.handleCellClick(dataitem.x, dataitem.y)}
-              cMenu={(e) => this._handleContextMenu(e, dataitem.x, dataitem.y)}
-              value={dataitem}
+              onClick={() => this.handleCellClick(dataItem.x, dataItem.y)}
+              cMenu={(e) => this._handleContextMenu(e, dataItem.x, dataItem.y)}
+              value={dataItem}
               />
-            {(datarow[datarow.length - 1] === dataitem) ? <div className="clear" /> : ""}
+            {(dataRow[dataRow.length - 1] === dataItem) ? <div className="clear" /> : ""}
           </div>
         );
       })
@@ -282,26 +308,26 @@ class Board extends React.Component {
   }
 
   // Component methods
-  componentWillReceiveProps(nextProps) {
-    if (JSON.stringify(this.props) !== JSON.stringify(nextProps)) {
-      this.setState({
-        boardData: this.initBoardData(nextProps.height, nextProps.width, nextProps.mines),
-        gameWon: false,
-        mineCount: nextProps.mines,
-      });
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (JSON.stringify(this.props) !== JSON.stringify(nextProps)) {
+  //     this.setState({
+  //       boardData: this.initBoardData(nextProps.height, nextProps.width, nextProps.mines),
+  //       gameWon: false,
+  //       mineCount: nextProps.mines,
+  //     });
+  //   }
+  // }
 
   render() {
     console.log("props ", this.props);
     return (
       <div className="board">
         <div className="game-info">
-          <span className="info">mines: {this.state.mineCount}</span><br />
-          <span className="info">{this.state.gameWon ? "You Win" : ""}</span>
+          <span className="info">mines: {this.props.mineCount}</span><br />
+          <span className="info">{this.props.gameWon ? "You Win" : ""}</span>
         </div>
         {
-          this.renderBoard(this.state.boardData)
+          this.renderBoard(this.props.boardData)
         }
       </div>
     );
@@ -309,14 +335,14 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
-  boardData: PropTypes.array,
+  //boardData: PropTypes.array,
   gameWon: PropTypes.bool,
   mineCount: PropTypes.number
 };
 
 const mapStateToProps = state => {
   return {
-    boardData: state.boardData,
+    //boardData: state.boardData,
     gameWon: state.gameWon,
     mineCount: state.mineCount
   }

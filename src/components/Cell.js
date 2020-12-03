@@ -8,10 +8,10 @@ class Cell extends React.Component {
   if (this.props.value.isMine) {
     return "💣";
   }
-  if(this.props.value.neighbour === 0 ){
+  if(this.props.value.neighbor === 0 ){
     return null;
   }
-  return this.props.value.neighbour;
+  return this.props.value.neighbor;
 }
 
 render(){
